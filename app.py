@@ -16,6 +16,15 @@ CLASSES = [
     "Tomato___healthy",
 ]
 
+DISEASE_INFO = {
+    "Potato___Early_blight": "A fungal disease that causes dark brown spots on potato leaves and can reduce crop yield.",
+    "Potato___Late_blight": "A severe disease that spreads quickly in wet conditions and is responsible for major potato crop losses.",
+    "Potato___healthy": "The potato leaf appears healthy with no visible disease symptoms.",
+    "Tomato___Early_blight": "A fungal disease that causes brown spots and yellowing on tomato leaves.",
+    "Tomato___Late_blight": "A fast-spreading disease that affects tomato plants, especially in humid conditions.",
+    "Tomato___healthy": "The tomato leaf appears healthy with no visible disease symptoms.",
+}
+
 APP_DIR = Path(__file__).parent
 MODEL_PATH = APP_DIR / "models" / "leaf_model_final.pth"
 
@@ -92,6 +101,11 @@ transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 
+
+def pretty_label(label: str) -> str:
+    return label.replace("___", " - ").replace("_", " ")
+
+
 try:
     model = load_model()
     st.toast("Model loaded successfully.")
@@ -124,8 +138,7 @@ with right_col:
     st.subheader("Supported Classes")
     st.write("This demo currently predicts these categories:")
     for cls in CLASSES:
-        pretty_cls = cls.replace("___", " - ").replace("_", " ")
-        st.write(f"• {pretty_cls}")
+        st.write(f"• {pretty_label(cls)}")
     st.markdown("</div>", unsafe_allow_html=True)
 
 if uploaded_file is None:
@@ -135,13 +148,14 @@ else:
         image = Image.open(uploaded_file).convert("RGB")
         input_tensor = transform(image).unsqueeze(0)
 
-        with torch.no_grad():
-            output = model(input_tensor)
-            probabilities = torch.softmax(output, dim=1)
-            predicted_class = torch.argmax(probabilities, dim=1).item()
-            confidence = probabilities[0][predicted_class].item() * 100
+        with st.spinner("Analyzing leaf image with AI..."):
+            with torch.no_grad():
+                output = model(input_tensor)
+                probabilities = torch.softmax(output, dim=1)
+                predicted_class = torch.argmax(probabilities, dim=1).item()
+                confidence = probabilities[0][predicted_class].item() * 100
 
-        pretty_label = CLASSES[predicted_class].replace("___", " - ").replace("_", " ")
+        pred_label = CLASSES[predicted_class]
 
         preview_col, result_col = st.columns([1.05, 1], gap="large")
 
@@ -154,17 +168,27 @@ else:
         with result_col:
             st.markdown("<div class='result-card'>", unsafe_allow_html=True)
             st.subheader("Prediction Result")
-            st.metric("Predicted Class", pretty_label)
+            st.metric("Predicted Class", pretty_label(pred_label))
             st.metric("Confidence", f"{confidence:.2f}%")
             st.progress(min(max(int(confidence), 0), 100))
 
-            st.write("### Class Probabilities")
-            for idx, prob in enumerate(probabilities[0]):
-                label = CLASSES[idx].replace("___", " - ").replace("_", " ")
+            st.write("### Top Predictions")
+            top3 = sorted(
+                list(enumerate(probabilities[0])),
+                key=lambda x: x[1],
+                reverse=True
+            )[:3]
+
+            for idx, prob in top3:
                 pct = prob.item() * 100
-                st.write(f"**{label}:** {pct:.2f}%")
+                st.write(f"**{pretty_label(CLASSES[idx])} — {pct:.2f}%**")
                 st.progress(min(max(int(pct), 0), 100))
+
+            st.write("### Disease Description")
+            st.info(DISEASE_INFO[pred_label])
+
             st.markdown("</div>", unsafe_allow_html=True)
+
     except Exception as exc:
         st.error(f"Prediction failed: {exc}")
 
