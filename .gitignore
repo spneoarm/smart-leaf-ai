@@ -1,21 +1,28 @@
+
+---
+
+# 5. `.gitignore`
+
+Paste this into `.gitignore`:
+
+```gitignore
 # Environment variables
 .env
 .env.local
 
 # Virtual environments
 venv/
+.venv/
 env/
 ENV/
-.venv
 
-# Python
+# Python cache and build artifacts
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 build/
-develop-eggs/
 dist/
 downloads/
 eggs/
@@ -30,29 +37,25 @@ wheels/
 .installed.cfg
 *.egg
 
-# IDE
+# IDE and editor files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# Operating system files
 .DS_Store
 Thumbs.db
 
 # Jupyter
 .ipynb_checkpoints/
-*.ipynb_checkpoints
 
-# Models and data (large files)
-models/*.h5
-models/*.pth
-models/*.pkl
-assets/data/
+# Large files and datasets
+data/
 *.zip
 
-# Testing
+# Testing and coverage
 .pytest_cache/
 .coverage
 

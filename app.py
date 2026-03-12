@@ -1,23 +1,23 @@
+from pathlib import Path
+
 import streamlit as st
 import torch
 import torch.nn as nn
 from torchvision import transforms, models
 from PIL import Image
-from pathlib import Path
-
 
 # Must match the exact training class order
 CLASSES = [
+    "Potato___Early_blight",
     "Potato___Late_blight",
     "Potato___healthy",
+    "Tomato___Early_blight",
     "Tomato___Late_blight",
     "Tomato___healthy",
 ]
 
-MODEL_PATH = "models/leaf_model.pth"
-
 APP_DIR = Path(__file__).parent
-MODEL_PATH = APP_DIR / "models" / "leaf_model.pth"
+MODEL_PATH = APP_DIR / "models" / "leaf_model_final.pth"
 
 st.set_page_config(page_title="Smart Leaf AI", page_icon="🌿", layout="wide")
 
@@ -41,12 +41,14 @@ st.markdown(
         background: white;
         border: 1px solid #e6efe8;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        color: #1f2937;
     }
     .result-card {
         padding: 1rem 1rem;
         border-radius: 16px;
         background: #f7fff7;
         border: 1px solid #dbeedd;
+        color: #1f2937;
     }
     .small-muted {
         color: #5f6b61;
@@ -76,7 +78,6 @@ st.markdown(
 
 
 @st.cache_resource
-# Cache the model so it only loads once.
 def load_model() -> nn.Module:
     model = models.resnet18(weights=None)
     model.fc = nn.Linear(model.fc.in_features, len(CLASSES))

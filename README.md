@@ -1,35 +1,35 @@
-# Smart Leaf AI 🌿
+# Plant Leaf Disease Multiclass Classification 🌿
 
-A computer vision app that detects plant diseases from leaf images using PyTorch and Streamlit.
+A deployable Streamlit app that classifies potato and tomato leaf images using a PyTorch ResNet18 model.
 
 ## Features
-
-- Upload leaf image
-- Predict disease
+- Upload a leaf image
+- Predict plant disease class
 - Show confidence score
-- Interactive Streamlit UI
+- Display class probabilities
+- Deployable on Streamlit Community Cloud
 
-## Model
-
-- ResNet18 (transfer learning)
-- Trained with PyTorch
-
-## Dataset
-
-PlantVillage dataset (subset)
-
-Classes:
+## Classes
+- Potato Early Blight
 - Potato Late Blight
 - Potato Healthy
+- Tomato Early Blight
 - Tomato Late Blight
 - Tomato Healthy
 
-## Run locally
+## Model
+- ResNet18
+- Transfer learning
+- Trained with PyTorch on a PlantVillage subset
 
-Install dependencies:
+## Project Structure
 
-pip install -r requirements.txt
-
-Run the app:
-
-streamlit run app.py
+```text
+smart-leaf-ai/
+├── app.py
+├── requirements.txt
+├── packages.txt
+├── README.md
+├── .gitignore
+└── models/
+    └── leaf_model_final.pth
