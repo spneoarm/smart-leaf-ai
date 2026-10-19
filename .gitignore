@@ -1,11 +1,3 @@
-
----
-
-# 5. `.gitignore`
-
-Paste this into `.gitignore`:
-
-```gitignore
 # Environment variables
 .env
 .env.local

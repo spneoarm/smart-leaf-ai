@@ -33,9 +33,6 @@ st.set_page_config(page_title="Smart Leaf AI", page_icon="🌿", layout="wide")
 st.markdown(
     """
     <style>
-    .main {
-        background: linear-gradient(180deg, #f8fff8 0%, #eef9f0 100%);
-    }
     .hero-card {
         padding: 1.4rem 1.2rem;
         border-radius: 18px;
@@ -43,21 +40,6 @@ st.markdown(
         color: white;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10);
         margin-bottom: 1rem;
-    }
-    .soft-card {
-        padding: 1rem 1rem;
-        border-radius: 16px;
-        background: white;
-        border: 1px solid #e6efe8;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-        color: #1f2937;
-    }
-    .result-card {
-        padding: 1rem 1rem;
-        border-radius: 16px;
-        background: #f7fff7;
-        border: 1px solid #dbeedd;
-        color: #1f2937;
     }
     .small-muted {
         color: #5f6b61;
@@ -108,7 +90,6 @@ def pretty_label(label: str) -> str:
 
 try:
     model = load_model()
-    st.toast("Model loaded successfully.")
 except FileNotFoundError:
     st.error(f"Model file not found: {MODEL_PATH}")
     st.stop()
@@ -118,8 +99,7 @@ except Exception as exc:
 
 left_col, right_col = st.columns([1.05, 1], gap="large")
 
-with left_col:
-    st.markdown("<div class='soft-card'>", unsafe_allow_html=True)
+with left_col, st.container(border=True):
     st.subheader("Upload Leaf Image")
     st.write("Choose a clear image of a potato or tomato leaf.")
     uploaded_file = st.file_uploader(
@@ -131,15 +111,12 @@ with left_col:
         "<p class='small-muted'>Tip: use a close-up image with good lighting and a visible leaf surface.</p>",
         unsafe_allow_html=True,
     )
-    st.markdown("</div>", unsafe_allow_html=True)
 
-with right_col:
-    st.markdown("<div class='soft-card'>", unsafe_allow_html=True)
+with right_col, st.container(border=True):
     st.subheader("Supported Classes")
     st.write("This demo currently predicts these categories:")
     for cls in CLASSES:
         st.write(f"• {pretty_label(cls)}")
-    st.markdown("</div>", unsafe_allow_html=True)
 
 if uploaded_file is None:
     st.info("Upload a potato or tomato leaf image to see a prediction.")
@@ -159,14 +136,11 @@ else:
 
         preview_col, result_col = st.columns([1.05, 1], gap="large")
 
-        with preview_col:
-            st.markdown("<div class='soft-card'>", unsafe_allow_html=True)
+        with preview_col, st.container(border=True):
             st.subheader("Image Preview")
-            st.image(image, caption="Uploaded Leaf Image", use_container_width=True)
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.image(image, caption="Uploaded Leaf Image", width="stretch")
 
-        with result_col:
-            st.markdown("<div class='result-card'>", unsafe_allow_html=True)
+        with result_col, st.container(border=True):
             st.subheader("Prediction Result")
             st.metric("Predicted Class", pretty_label(pred_label))
             st.metric("Confidence", f"{confidence:.2f}%")
@@ -186,8 +160,6 @@ else:
 
             st.write("### Disease Description")
             st.info(DISEASE_INFO[pred_label])
-
-            st.markdown("</div>", unsafe_allow_html=True)
 
     except Exception as exc:
         st.error(f"Prediction failed: {exc}")
